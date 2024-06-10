@@ -1,58 +1,56 @@
 class Book:
-    members = []
+    all_books = []
 
     def __init__(self, title):
         self.title = title
-        self.__class__.members.append(self)
+        Book.all_books.append(self)
 
     def contracts(self):
-        return [contract for contract in Contract.members if contract.book == self]
+        return [contract for contract in Contract.all_contracts if contract.book == self]
 
     def authors(self):
         return [contract.author for contract in self.contracts()]
 
+
 class Author:
-    members = []
+    all_authors = []
 
     def __init__(self, name):
         self.name = name
-        self.__class__.members.append(self)
+        Author.all_authors.append(self)
 
     def contracts(self):
-        return [contract for contract in Contract.members if contract.author == self]
+        return [contract for contract in Contract.all_contracts if contract.author == self]
 
     def books(self):
         return [contract.book for contract in self.contracts()]
 
     def sign_contract(self, book, date, royalties):
-        if not isinstance(book, Book):
-            raise Exception("Invalid book object.")
-        if not isinstance(date, str):
-            raise Exception("Invalid date format.")
-        if not isinstance(royalties, int):
-            raise Exception("Invalid royalties format.")
-
-        contract = Contract(self, book, date, royalties)
-        return contract
+        return Contract(self, book, date, royalties)
 
     def total_royalties(self):
         return sum(contract.royalties for contract in self.contracts())
 
+
 class Contract:
-    members = []
+    all_contracts = []
 
     def __init__(self, author, book, date, royalties):
         if not isinstance(author, Author):
-            raise Exception("Invalid author object.")
+            raise Exception("author must be an instance of Author")
         if not isinstance(book, Book):
-            raise Exception("Invalid book object.")
+            raise Exception("book must be an instance of Book")
         if not isinstance(date, str):
-            raise Exception("Invalid date format.")
+            raise Exception("date must be a string")
         if not isinstance(royalties, int):
-            raise Exception("Invalid royalties format.")
+            raise Exception("royalties must be an int")
 
         self.author = author
         self.book = book
         self.date = date
         self.royalties = royalties
-        self.__class__.members.append(self)
+        Contract.all_contracts.append(self)
+
+    @classmethod
+    def contracts_by_date(cls, date):
+        return [contract for contract in cls.all_contracts if contract.date == date]
